@@ -5,6 +5,8 @@ import {
   SignUpCommand,
   ConfirmSignUpCommand,
   InitiateAuthCommand,
+  ForgotPasswordCommand,
+  ConfirmForgotPasswordCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
 
@@ -14,7 +16,6 @@ export class AuthService {
     region: process.env.AWS_REGION,
   });
 
-  // 🟢 SIGNUP
   async signup(email: string, password: string) {
     try {
       const command = new SignUpCommand({
@@ -40,7 +41,6 @@ export class AuthService {
     }
   }
 
-  // 🟡 CONFIRM SIGNUP (optional if auto-confirmation is disabled)
   async confirmSignup(email: string, code: string) {
     try {
       const command = new ConfirmSignUpCommand({
@@ -57,7 +57,6 @@ export class AuthService {
     }
   }
 
-  // 🔵 LOGIN
   async login(email: string, password: string) {
     try {
       const command = new InitiateAuthCommand({
@@ -74,6 +73,41 @@ export class AuthService {
     } catch (error) {
       console.error('Login failed:', error);
       throw new UnauthorizedException('Invalid email or password');
+    }
+  }
+  async forgotPassword(email: string) {
+    try {
+      const command = new ForgotPasswordCommand({
+        ClientId: process.env.AWS_COGNITO_CLIENT_ID,
+        Username: email,
+      });
+
+      const response = await this.client.send(command);
+      return {
+        message: 'Password reset code sent to email',
+        deliveryDetails: response.CodeDeliveryDetails,
+      };
+    } catch (err: unknown) {
+      const error = err as Error;
+      throw new BadRequestException(error.message || 'Failed to send reset code');
+    }
+  }
+
+  // 🔄 RESET PASSWORD (CONFIRM)
+  async resetPassword(email: string, code: string, newPassword: string) {
+    try {
+      const command = new ConfirmForgotPasswordCommand({
+        ClientId: process.env.AWS_COGNITO_CLIENT_ID,
+        Username: email,
+        ConfirmationCode: code,
+        Password: newPassword,
+      });
+
+      await this.client.send(command);
+      return { message: 'Password has been reset successfully' };
+    } catch (err: unknown) {
+      const error = err as Error;
+      throw new BadRequestException(error.message || 'Password reset failed');
     }
   }
 }
