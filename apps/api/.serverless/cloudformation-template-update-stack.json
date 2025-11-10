@@ -91,13 +91,28 @@
       "Properties": {
         "Code": {
           "S3Bucket": "serverless-framework-deployments-eu-north-1-b9a44d13-a7b2",
-          "S3Key": "serverless/authguard-api/dev/1762168892367-2025-11-03T11:21:32.367Z/api.zip"
+          "S3Key": "serverless/authguard-api/dev/1762778816660-2025-11-10T12:46:56.660Z/api.zip"
         },
         "Handler": "dist/lambda.handler",
         "Runtime": "nodejs20.x",
         "FunctionName": "authguard-api-dev-api",
         "MemorySize": 512,
         "Timeout": 30,
+        "Environment": {
+          "Variables": {
+            "NODE_ENV": "production",
+            "PORT": "3000",
+            "AWS_COGNITO_REGION": "eu-north-1",
+            "AWS_COGNITO_CLIENT_ID": "146m3ubtf0sntj5bv7lnt44rom",
+            "AWS_COGNITO_AUTH_FLOW": "USER_PASSWORD_AUTH",
+            "AWS_COGNITO_USER_POOL_ID": "eu-north-1_uV6yZFtMt",
+            "DATABASE_HOST": "localhost",
+            "DATABASE_PORT": "5432",
+            "DATABASE_USERNAME": "leilaauth",
+            "DATABASE_PASSWORD": "authservice",
+            "DATABASE_NAME": "devguard_db"
+          }
+        },
         "Role": {
           "Fn::GetAtt": [
             "IamRoleLambdaExecution",
@@ -109,14 +124,14 @@
         "ApiLogGroup"
       ]
     },
-    "ApiLambdaVersionmzY3fv3f6Ex6LN75A0WuHpnrRIQeoKdBUOIa8QUs": {
+    "ApiLambdaVersionsHlvuoKYbaOFlaXp5fowWR6RpBUobFWeDFg4A8Ds4": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ApiLambdaFunction"
         },
-        "CodeSha256": "5JD8OKwMcgceb5F5CvFaDyFM8jzAPXMOobCac2pm9kk="
+        "CodeSha256": "JPXtuO3oxN0tpIL0SRRI63eWnqGwRGhblg6vKpW9kfQ="
       }
     },
     "HttpApi": {
@@ -193,13 +208,13 @@
         "TimeoutInMillis": 30000
       }
     },
-    "HttpApiRouteDefault": {
+    "HttpApiRouteAnyProxyVar": {
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
           "Ref": "HttpApi"
         },
-        "RouteKey": "$default",
+        "RouteKey": "ANY /{proxy+}",
         "Target": {
           "Fn::Join": [
             "/",
@@ -225,7 +240,7 @@
     "ApiLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ApiLambdaVersionmzY3fv3f6Ex6LN75A0WuHpnrRIQeoKdBUOIa8QUs"
+        "Ref": "ApiLambdaVersionsHlvuoKYbaOFlaXp5fowWR6RpBUobFWeDFg4A8Ds4"
       },
       "Export": {
         "Name": "sls-authguard-api-dev-ApiLambdaFunctionQualifiedArn"

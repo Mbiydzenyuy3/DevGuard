@@ -5,19 +5,18 @@ provider:
   runtime: nodejs20.x
   region: eu-north-1
   stage: dev
-
-environment:
-  NODE_ENV: production
-  PORT: 3000
-  AWS_COGNITO_REGION: ${self:provider.region}
-  AWS_COGNITO_CLIENT_ID: ${env:AWS_COGNITO_CLIENT_ID}
-  AWS_COGNITO_AUTH_FLOW: USER_PASSWORD_AUTH
-  AWS_COGNITO_USER_POOL_ID: eu-north-1_uV6yZFtMt
-  DATABASE_HOST: ${env:DATABASE_HOST}
-  DATABASE_PORT: ${env:DATABASE_PORT}
-  DATABASE_USERNAME: ${env:DATABASE_USERNAME}
-  DATABASE_PASSWORD: ${env:DATABASE_PASSWORD}
-  DATABASE_NAME: ${env:DATABASE_NAME}
+  environment:
+    NODE_ENV: production
+    PORT: 3000
+    AWS_COGNITO_REGION: ${self:provider.region}
+    AWS_COGNITO_CLIENT_ID: ${env:AWS_COGNITO_CLIENT_ID}
+    AWS_COGNITO_AUTH_FLOW: USER_PASSWORD_AUTH
+    AWS_COGNITO_USER_POOL_ID: eu-north-1_uV6yZFtMt
+    DATABASE_HOST: ${env:DATABASE_HOST}
+    DATABASE_PORT: ${env:DATABASE_PORT}
+    DATABASE_USERNAME: ${env:DATABASE_USERNAME}
+    DATABASE_PASSWORD: ${env:DATABASE_PASSWORD}
+    DATABASE_NAME: ${env:DATABASE_NAME}
 
 functions:
   api:
@@ -25,15 +24,16 @@ functions:
     timeout: 30
     memorySize: 512
     events:
-      - httpApi: '*'
+      - httpApi:
+          path: /{proxy+}
+          method: ANY
 
 plugins:
   - serverless-offline
 
 package:
   individually: true
-  patterns:
-    - '!node_modules/.prisma/**'
-    - '!src/**'
-    - 'dist/**'
-    - 'node_modules/**'
+  include:
+    - dist/**
+    - node_modules/**
+    - package.json

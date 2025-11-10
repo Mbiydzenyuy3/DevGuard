@@ -8,10 +8,11 @@
     "build": "nest build",
     "start:dev": "ts-node -r tsconfig-paths/register src/main.ts",
     "start:local": "cross-env RUN_MODE=local ts-node -r tsconfig-paths/register src/main.ts",
-    "start:serverless": "serverless offline --noPrependStageInUrl",
+    "start:serverless": "npx serverless offline --stage dev --region eu-north-1",
     "lint": "eslint '{src,test}/**/*.ts' --fix",
     "typeorm": "typeorm-ts-node-commonjs -d src/data-source.ts",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "deploy": "serverless deploy"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.918.0",
